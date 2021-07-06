@@ -241,6 +241,8 @@ async function main() {
       console.log(`NEW MATCH: ${url}`);
     }
   });
+
+  console.log(`completed ${new Date().toLocaleString()}`);
 }
 
 main();
