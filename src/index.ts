@@ -210,7 +210,9 @@ async function main() {
       distance: 50,
       zip: 94132,
     })
-  ).filter((x) => x.trim.includes("EX") && x.transmission.includes("Manual"));
+  ).filter(
+    (x) => x.trim.includes("EX") /* && x.transmission.includes("Manual")*/
+  );
 
   console.log("Civics: ", civics);
 
@@ -222,15 +224,16 @@ async function main() {
       distance: 50,
       zip: 94132,
     })
-  ).filter((x) => x.trim.includes("Si") && x.transmission.includes("Manual"));
+  ).filter(
+    (x) => x.trim.includes("Si") /*&& x.transmission.includes("Manual")*/
+  );
 
   console.log("Del Sols: ", delSols);
 
-  const allUrls = [...civics.map((x) => x.url), ...delSols.map((x) => x.url)];
-  console.log(
-    "all matches:\n",
-    JSON.stringify([...civics.map((x) => x.url), ...delSols.map((x) => x.url)])
-  );
+  const allVehicles = [...civics, ...delSols];
+
+  const allUrls = allVehicles.map((x) => x.url);
+  console.log("all matches:\n", JSON.stringify(allUrls, null, 2));
 
   const knownUrls = JSON.parse(
     fs.readFileSync("knownUrls.json", { encoding: "utf8" })
@@ -238,7 +241,13 @@ async function main() {
 
   allUrls.forEach((url) => {
     if (!knownUrls.includes(url)) {
-      console.log(`NEW MATCH: ${url}`);
+      const vehicle = allVehicles.find((x) => x.url === url);
+      if (!vehicle) throw Error("ts");
+      console.log(
+        `NEW MATCH: ${url}, posted: ${vehicle.dateAdded.toLocaleDateString()}, age: ${Math.ceil(
+          (Date.now() - vehicle.dateAdded.getTime()) / (24 * 60 * 60 * 1000)
+        )} days`
+      );
     }
   });
 
